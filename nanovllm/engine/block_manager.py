@@ -1,23 +1,29 @@
+# Paged Attention 机制实现
+
 from collections import deque
 import xxhash
 import numpy as np
 
 from nanovllm.engine.sequence import Sequence
 
-
+# 每个 Block 对应 KV Cache 里一段物理显存，但 Block 对象本身只是一条元数据，记录这块被几条序列引用、装了哪些 token
 class Block:
 
     def __init__(self, block_id):
-        self.block_id = block_id
-        self.ref_count = 0
-        self.hash = -1
-        self.token_ids = []
+        self.block_id = block_id        # 物理块编号
+        self.ref_count = 0              # 引用计数：几条序列在共享这块
+        self.hash = -1                  # 块内容的哈希（-1 表示还没填满、没登记）
+        self.token_ids = []             # 块内 token（用于校验前缀是否真的相同）
 
-    def update(self, hash: int, token_ids: list[int]):
+    def update(self, hash: int, token_ids: list[int]): 
+        # 块被填满、算好哈希时登记
+        
         self.hash = hash
         self.token_ids = token_ids
 
     def reset(self):
+        # 从空闲队列取出、分配给新序列时
+
         self.ref_count = 1
         self.hash = -1
         self.token_ids = []

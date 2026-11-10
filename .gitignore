@@ -195,4 +195,4 @@ cython_debug/
 .cursorindexingignore
 
 # models 
-models/
+model/

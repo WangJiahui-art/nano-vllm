@@ -102,11 +102,11 @@ class Attention(nn.Module):
             # 解码阶段 q 只有一个 token（长度为1），利用 cache 可以极大地加速推理速度
 
             # 为打印各个张量的维度和数据类型.
-            print(
-                f"q: {q.unsqueeze(1), q.dtype}, k_cache : {k_cache.shape, k_cache.dtype}, \
-                  v_cache : {v_cache.shape, v_cache.dtype}, cache_seqlens : {context.context_lens.shape, context.context_lens.dtype}, \
-                  scale : {self.scale.shape, type(self.scale)}"
-            )
+            # print(
+            #     f"q: {q.unsqueeze(1), q.dtype}, k_cache : {k_cache.shape, k_cache.dtype}, \
+            #       v_cache : {v_cache.shape, v_cache.dtype}, cache_seqlens : {context.context_lens.shape, context.context_lens.dtype}, \
+            #       scale : {type(self.scale)}"
+            # )
             o = flash_attn_with_kvcache(
                 q.unsqueeze(1),
                 k_cache,
